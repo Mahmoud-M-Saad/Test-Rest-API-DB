@@ -1,0 +1,25 @@
+{
+  "name": "001--rest-api-app",
+  "version": "1.0.0",
+  "description": "Our Rest API App",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mahmoud-M-Saad/Test-Rest-API-DB.git"
+  },
+  "author": "Mahmoud Saad",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Mahmoud-M-Saad/Test-Rest-API-DB/issues"
+  },
+  "homepage": "https://github.com/Mahmoud-M-Saad/Test-Rest-API-DB#readme",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "express": "^4.18.2",
+    "nodemon": "^3.0.1"
+  }
+}
