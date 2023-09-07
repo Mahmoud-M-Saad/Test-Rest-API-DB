@@ -1,6 +1,7 @@
 const User = require('../models/user');
 const {validationResult} = require('express-validator');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 exports.getUsers = (req, res) => {
     User
@@ -16,7 +17,7 @@ exports.getUsers = (req, res) => {
                 .status(400)
                 .json({errors: err.errors});
         })
-};
+    };
 
 exports.createUser = (req, res) => {
     const errors = validationResult(req);
@@ -27,7 +28,7 @@ exports.createUser = (req, res) => {
     }
     const {name, email, password} = req.body;
     User
-        .findOne({email:email})
+        .findOne({email: email})
         .then((user) => {
             if (user) {
                 return res
@@ -56,40 +57,50 @@ exports.createUser = (req, res) => {
         .catch(err => {
             console.log("From Controller/createUser/outter: " + err);
         })
-};
-    
-exports.login = (req,res)=>{
+    };
+
+exports.login = (req, res) => {
     const {email, password} = req.body;
     User
-       .findOne({email:email}).then(user=>{
-        if (!user) {
+        .findOne({email: email})
+        .then(user => {
+            if (!user) {
+                return res
+                    .status(401)
+                    .json({message: "User not found"});
+            } else {
+                bcrypt
+                    .compare(password, user.password)
+                    .then(isMatch => {
+                        if (!isMatch) {
+                            res
+                                .status(401)
+                                .json({message: "Invalid password"});
+                        } else {
+                            const token = jwt.sign({
+                                user_ID: user._id,
+                                name: user.name,
+                                email: user.email
+                            }, 'somesupersecretsecret', { expiresIn: '1h' });
+                            res
+                                .status(200)
+                                .json({message: "You are logged in", token: token, user_Name: user.name});
+                        }
+                    })
+                    .catch(err => {
+                        console.log("From Controller/login: " + err);
+                        return res
+                            .status(400)
+                            .json({errors: err.errors});
+                    })
+                }
+        })
+        .catch(err => {
+            console.log("From Controller/login: " + err);
             return res
-              .status(400)
-              .json({message: "User not found"});
-        }else{
-            bcrypt
-              .compare(password, user.password)
-              .then(isMatch => {
-                    if (isMatch) {
-                        res
-                          .status(200)
-                          .json({message: "You are logged in", user_ID: user._id , user_Name:user.name});
-                    } else {
-                        res
-                          .status(400)
-                          .json({message: "Invalid password"});
-                    }
-                })
-              .catch(err => {
-                    console.log("From Controller/login: " + err);
-                    return res
-                      .status(400)
-                      .json({errors: err.errors});
-                })
-        }
-       }).catch(err=>{
-        console.log("From Controller/login: " + err);
-       });
+                .status(400)
+                .json({errors: err.errors});
+        });
 };
 
 exports.deleteUserById = (req, res) => {
@@ -122,4 +133,4 @@ exports.deleteUserById = (req, res) => {
                 .status(400)
                 .json({errors: err.errors});
         })
-};
+    };
