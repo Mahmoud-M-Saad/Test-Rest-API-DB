@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const feedRoutes = require('./routes/feed');
+const userAuthRoutes = require('./routes/userAuth');
 const mongoose = require('mongoose');
 
 const app = express();
@@ -16,6 +17,7 @@ app.use((req, res, next) => {
 });
 
 app.use('/feed', feedRoutes);
+app.use('/auth', userAuthRoutes);
 
 mongoose
     .connect('mongodb+srv://mahmoudsaad:dgCBr8pGRoCd8WyA@cluster0.ytv2wta.mongodb.net/FirstAPI')
